@@ -134,11 +134,15 @@ def edit_task(task_id):
     return render_template('edit_task.html', task=task, categories=categories)
 
 
-@app.route('/delete_task/<task_id>')
+@app.route('/delete_task/<task_id>', methods=['GET', 'POST'])
 def delete_task(task_id):
-    mongo.db.tasks.delete_one({'_id': ObjectId(task_id)})
-    flash('Task Successfully Deleted')
-    return redirect(url_for('get_tasks'))
+    if request.method == 'POST':
+        mongo.db.tasks.delete_one({'_id': ObjectId(task_id)})
+        flash('Task Successfully Deleted')
+        return redirect(url_for("get_tasks"))
+
+    task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
+    return render_template('delete_task.html', task=task)
 
 
 if __name__ == '__main__':
