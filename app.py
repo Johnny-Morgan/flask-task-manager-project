@@ -25,10 +25,20 @@ def get_tasks():
     return render_template('tasks.html', tasks=tasks)
 
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    query = request.form.get('query')
+    tasks = list(mongo.db.tasks.find({'$text': {'$search': query}}))
+    return render_template('tasks.html', tasks=tasks)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         # check if username already exists in the db
+        user = request.form.get('username').lower()
+        if len(user) < 5:
+            flash('Username must be at least 5 characters', category='error')
         existing_user = mongo.db.users.find_one(
             {'username': request.form.get('username').lower()})
 
