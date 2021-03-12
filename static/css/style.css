@@ -4,6 +4,18 @@
 
 .flashes h4{
     line-height: 2;
+    margin-top: 0;
+}
+
+.flashes button {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: medium none;
+    color: #fff;
+    font-size: 20px;
+    position: absolute;
+    right: 10px;
+    top: 85px;
+    color: inherit;
 }
 
 .btn-small {
@@ -13,4 +25,15 @@
 .collapsible-header .col strong {
     margin: 5px;
     line-height: 42px;
+}
+
+@media screen and (max-width: 480px) {
+    .flashes h4 {
+        font-size: 1.4rem;
+    }
+
+    .flashes button {
+        right: 4px;
+        top: 60px;
+    }
 }

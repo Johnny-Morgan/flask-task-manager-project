@@ -33,7 +33,8 @@ def register():
             {'username': request.form.get('username').lower()})
 
         if existing_user:
-            flash('Username already exists')
+            flash('Username already exists', category='error')
+            return redirect(url_for("register"))
 
         register = {'username': request.form.get('username').lower(),
                     'password': generate_password_hash(request.form.get('password'))}
@@ -42,8 +43,7 @@ def register():
 
         # put the new user into 'session' cookie
         session['user'] = request.form.get('username').lower()
-        flash('Registration Successful!')
-
+        flash('Registration Successful!', category='success')
         return redirect(url_for('profile', username=session['user']))
 
     return render_template('register.html')
@@ -61,15 +61,17 @@ def login():
             if check_password_hash(
                     existing_user['password'], request.form.get('password')):
                 session['user'] = request.form.get('username').lower()
-                flash('Welcome, {}'.format(request.form.get('username')))
+                flash('Welcome, {}'.format(
+                    request.form.get('username').capitalize()),
+                    category='success')
                 return redirect(url_for('profile', username=session['user']))
             else:
                 # invalid password match
-                flash('Incorrect username and/or password')
+                flash('Incorrect username and/or password', category='error')
                 return redirect(url_for('login'))
         else:
             # username does not exist
-            flash('Incorrect username and/or password')
+            flash('Incorrect username and/or password', category='error')
             return redirect(url_for('login'))
 
     return render_template('login.html')
@@ -89,7 +91,7 @@ def profile(username):
 @app.route('/logout')
 def logout():
     # remove user from session cookies
-    flash('You have been logged out')
+    flash('You have been logged out', category='success')
     session.pop('user')
     return redirect(url_for('login'))
 
@@ -107,7 +109,7 @@ def add_task():
             'created_by': session['user']
         }
         mongo.db.tasks.insert(task)
-        flash('Task Successfully Added')
+        flash('Task Successfully Added', category='success')
         return redirect(url_for('get_tasks'))
 
     categories = mongo.db.categories.find().sort('category_name', 1)
@@ -127,7 +129,7 @@ def edit_task(task_id):
             'created_by': session['user']
         }
         mongo.db.tasks.update({'_id': ObjectId(task_id)}, submit)
-        flash('Task Successfully Updated')
+        flash('Task Successfully Updated', category='success')
 
     task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
     categories = mongo.db.categories.find().sort('category_name', 1)
@@ -138,7 +140,7 @@ def edit_task(task_id):
 def delete_task(task_id):
     if request.method == 'POST':
         mongo.db.tasks.delete_one({'_id': ObjectId(task_id)})
-        flash('Task Successfully Deleted')
+        flash('Task Successfully Deleted', category='success')
         return redirect(url_for("get_tasks"))
 
     task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
@@ -158,7 +160,7 @@ def add_category():
             'category_name': request.form.get('category_name')
         }
         mongo.db.categories.insert_one(category)
-        flash('New Category Successfully Added')
+        flash('New Category Successfully Added', category='success')
         return redirect(url_for('get_categories'))
     return render_template('add_category.html')
 
@@ -170,7 +172,7 @@ def edit_category(category_id):
             'category_name': request.form.get('category_name')
         }
         mongo.db.categories.update({'_id': ObjectId(category_id)}, submit)
-        flash('Category Successfully Updated')
+        flash('Category Successfully Updated', category='success')
 
     category = mongo.db.categories.find_one({'_id': ObjectId(category_id)})
     return render_template('edit_category.html', category=category)
@@ -180,7 +182,7 @@ def edit_category(category_id):
 def delete_category(category_id):
     if request.method == 'POST':
         mongo.db.categories.remove({'_id': ObjectId(category_id)})
-        flash('Category Successfully Deleted')
+        flash('Category Successfully Deleted', category='success')
         return redirect(url_for('get_categories'))
     category = mongo.db.categories.find_one({'_id': ObjectId(category_id)})
     return render_template('delete_category.html', category=category)

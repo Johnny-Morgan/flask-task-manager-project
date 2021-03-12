@@ -61,12 +61,24 @@
 
     <section>
         <!-- flash messages -->
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        {% for message in messages %}
+        {% for category, message in messages %}
+        {% if category == 'success' %}
         <div class="row flashes">
-            <h4 class="light-blue lighten-4 center-align">{{ message }}</h4>
+            <h4 class="green lighten-4 center-align">{{ message }}</h4>
+            <button type="button" class="close green-text" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+        {% else %}
+        <div class="row flashes">
+            <h4 class="red lighten-4 center-align">{{ message }}</h4>
+            <button type="button" class="close red-text" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
         {% endfor %}
         {% endif %}
         {% endwith %}
