@@ -5,6 +5,7 @@ from flask import (
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+
 if os.path.exists('env.py'):
     import env
 
@@ -196,6 +197,17 @@ def delete_category(category_id):
         return redirect(url_for('get_categories'))
     category = mongo.db.categories.find_one({'_id': ObjectId(category_id)})
     return render_template('delete_category.html', category=category)
+
+
+@app.route('/complete_task/<task_id>', methods=['GET', 'POST'])
+def complete_task(task_id):
+    if request.method == 'POST':
+        mongo.db.tasks.update({'_id': ObjectId(task_id)}, {
+                              '$set': {'complete': 'true'}})
+        flash('Task Completed', category='success')
+        return redirect(url_for('get_tasks'))
+    task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
+    return render_template('complete_task.html', task=task)
 
 
 if __name__ == '__main__':
