@@ -22,6 +22,24 @@
     margin: 5px;
 }
 
+.task-container {
+    position: relative;
+}
+
+.btn-done {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.btn-large {
+    margin-top: 16px;
+}
+
+.btn-small:hover {
+    transform: scale(0.97);
+}
+
 .collapsible-header .col strong {
     margin: 5px;
     line-height: 42px;
