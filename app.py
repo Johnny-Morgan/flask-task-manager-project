@@ -140,6 +140,9 @@ def edit_task(task_id):
             'created_by': session['user']
         }
         mongo.db.tasks.update({'_id': ObjectId(task_id)}, submit)
+        mongo.db.tasks.update({'_id': ObjectId(task_id)}, {
+                              '$set': {'complete': 'true'}})
+        flash('Task Completed', category='success')
         flash('Task Successfully Updated', category='success')
 
     task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
@@ -208,6 +211,17 @@ def complete_task(task_id):
         return redirect(url_for('get_tasks'))
     task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
     return render_template('complete_task.html', task=task)
+
+
+@app.route('/incomplete_task/<task_id>', methods=['GET', 'POST'])
+def incomplete_task(task_id):
+    if request.method == 'POST':
+        mongo.db.tasks.update({'_id': ObjectId(task_id)}, {
+                              '$set': {'complete': 'false'}})
+        flash('Task Marked as Undone', category='success')
+        return redirect(url_for('get_tasks'))
+    task = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
+    return render_template('incomplete_task.html', task=task)
 
 
 if __name__ == '__main__':
